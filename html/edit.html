@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>編集</title>
+        <link rel="stylesheet" href="/css/main.css">
+        <script type="text/javascript" src="javascript/getjson.js"></script>
+        <script>
+
+            window.onload = function(){
+                getJSON("/list","output");
+                // getJSON("/list/filelist","output");
+            }
+            function bookname(){
+                document.getElementById("new").href="/new/bookname"
+                meta_suburl = 'bookname'
+                getJSON('/list','output');
+            }
+            function filelist(){
+                document.getElementById("new").href="/new/filelist"
+                meta_suburl = 'filelist'
+                getJSON('/list/','output');
+            }
+        </script>
+    </head>
+    <body>
+        <div id="answer" class=""></div>
+        <a href=href=javascript:void(0); onclick="bookname();return false" class="tab-button">bookname</a>
+        <a href=href=javascript:void(0); onclick="filelist();return false" class="tab-button">filelist</a>
+        <div id="output" class="output">testout</div>
+        <div>
+            <a href="/new/bookname" id="new">add new</a>
+        </div>
+    </body>
+</html>
