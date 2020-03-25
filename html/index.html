@@ -1,15 +1,16 @@
 <html>
     <head>
         <title>now</title>
-        <script src="javascript/getjson.js"></script>
+        <script src="/javascript/getjson.js"></script>
     </head>
     <body>
         <div> <a href="/edit.html">編集ページ</a></div>
         <div>
-            <form action="" method="post">
-                <input type="file" name="" id="">
+            <form action="/upload/" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" onchange="formdataJSON(this);" id="up_loadfile" multiple="multiple">
                 <input type="submit" value="送信">
             </form>
+            <div id="fileck" class="fileck"></div>
         </div>
         <div>
             <input type="text" name="serch" id="keyword" onkeyup="serchgetJSON('output');return false">

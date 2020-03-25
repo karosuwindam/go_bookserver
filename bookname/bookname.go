@@ -124,6 +124,24 @@ func (t *Data) ReadId(id string) int {
 
 	return E_OK
 }
+func (t *Data) ReadName(name string) int {
+	DbConnection, _ := sql.Open("sqlite3", t.dbpath)
+	defer DbConnection.Close()
+	cmd := "SELECT * FROM " + database
+	cmd += " where name='" + name
+	cmd += "'"
+	rows, err := DbConnection.Query(cmd)
+	if err != nil {
+		return E_ERR
+	}
+	defer rows.Close()
+	data := booknames{}
+	rows.Next()
+	rows.Scan(&data.Id, &data.Name, &data.Title, &data.Writer, &data.Brand, &data.Booktype, &data.Ext, &data.Created_at, &data.Updated_at)
+	t.Tmp = data
+
+	return E_OK
+}
 
 func (t *Data) Add(name, title, writer, brand, booktype, ext string) int {
 	var id int

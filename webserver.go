@@ -14,9 +14,9 @@ import (
 const serverip = ""
 const serverport = "8080"
 
-// const databass = "test1.db"
+const databass = "test1.db"
 
-const databass = "development.sqlite3"
+// const databass = "development.sqlite3"
 
 var websetup_flag bool = false
 var Logdata logoutput.Data
@@ -25,7 +25,10 @@ var Logdata logoutput.Data
 var bookname_t bookname.Data
 var filelist_t filelist.Data
 
+var Logout logoutput.Data
+
 func webserversetup(logname string) {
+	Logout.Setup("upload.log")
 	Logdata.Setup(logname)
 	// bookname_t.New("development.sqlite3")
 	bookname_t.New(databass)
@@ -296,7 +299,51 @@ func addNew(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "%s", output)
 }
+func machdata(str string) string {
+	output := ""
+	data := map[string]string{}
 
+	data["keyword"] = str
+	if data["keyword"] == "" {
+		return "{}"
+	}
+	bookname_t.ReadName(data["keyword"])
+	if bookname_t.Tmp.Id == 0 {
+		for i := 1; i < 3; i++ {
+			bookname_t.ReadName(data["keyword"][0 : len(data["keyword"])-i])
+			if bookname_t.Tmp.Id != 0 {
+				output = bookname_t.JsonOutTmp()
+				break
+			} else {
+
+				return "{}"
+			}
+		}
+	} else {
+		output = bookname_t.JsonOutTmp()
+	}
+	return output
+}
+func machdata_filelist(str string) string {
+	output := ""
+	filelist_t.ReadName(str)
+	if filelist_t.Tmp.Id == 0 {
+		output = "{\"flag\":0}"
+	} else {
+		output = "{\"flag\":1}"
+	}
+	return output
+}
+func machdatahttp(w http.ResponseWriter, r *http.Request) {
+	output := ""
+	urldata := urlAnalysis(r.URL.Path)
+	str := urldata[1]
+	output = machdata(str)
+	if output != "{}" {
+		output += "," + machdata_filelist(str)
+	}
+	fmt.Fprintf(w, "%s", output)
+}
 func webserverstart() {
 	if !websetup_flag {
 		fmt.Println("web server not init")
@@ -305,10 +352,12 @@ func webserverstart() {
 	Logdata.Out(1, "web server start %v:%v", serverip, serverport)
 	http.HandleFunc("/list/", getlist)
 	http.HandleFunc("/serch/", getserch)
+	http.HandleFunc("/mach/", machdatahttp)
 	http.HandleFunc("/new/", addNew)
 	http.HandleFunc("/edit/", editData)
 	http.HandleFunc("/destory/", destory)
 	http.HandleFunc("/show/", showdata)
+	http.HandleFunc("/upload/", upload)
 	// http.HandleFunc("/zip", zipdata)
 	// http.HandleFunc("/ziplist", ziplist)
 	// http.HandleFunc("/view/", view)

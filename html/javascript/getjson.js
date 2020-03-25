@@ -80,16 +80,34 @@ function jsonOutput(str){
     req.open("GET", url+"/"+meta_suburl, false); // HTTPメソッドとアクセスするサーバーの　URL　を指定
     req.send(null);					    // 実際にサーバーへリクエストを送信
   }
+function serchDataGet(str){
+  var tmp = JSON.parse(str);
+  return str;
+}
+function serchgetJSON(output){
+  var keyword = document.getElementById("keyword").value
+  var req = new XMLHttpRequest();
+  req.onreadystatechange = function(){
+    if(req.readyState == 4 && req.status == 200){
+      var data=req.responseText;
+      document.getElementById(output).innerHTML = serchDataGet(data);
+    }
+  };
+  req.open("GET","/serch/filelist/"+keyword,false);
+  req.send(null);
+}
 
-  function serchgetJSON(output){
-    var keyword = document.getElementById("keyword").value
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function(){
-      if(req.readyState == 4 && req.status == 200){
-        var data=req.responseText;
-        document.getElementById(output).innerHTML = data;
-      }
-    };
-    req.open("GET","/serch/filelist/"+keyword,false);
-    req.send(null);
-  }
+function formdataJSON(inputElement){
+  var filelist = inputElement.files;
+  var filename = filelist[0].name
+  tmp = filename.substr(0,filename.length-4)
+  var req = new XMLHttpRequest();
+  req.onreadystatechange = function(){
+    if(req.readyState == 4 && req.status == 200){
+      var data=req.responseText;
+      document.getElementById("fileck").innerHTML = data;
+    }
+  };
+  req.open("GET","/mach/"+tmp,false);
+  req.send(null)
+}
