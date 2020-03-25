@@ -103,6 +103,42 @@ func (t *Data) Read(s string) int {
 	t.List = tmp
 	return E_OK
 }
+func (t *Data) ReadTime(s string) int {
+	DbConnection, _ := sql.Open("sqlite3", t.dbpath)
+	defer DbConnection.Close()
+	cmd := "SELECT * FROM " + database
+	tmp := []filelists{}
+	nowtime := time.Now()
+
+	switch s {
+	case "today":
+		cmd += " " + "where " + "updated_at "
+		cmd += "between '" + nowtime.Format("2006-01-02") + "' and '"
+		cmd += nowtime.Add(24*time.Hour).Format("2006-01-02") + "'"
+	case "toweek":
+		cmd += " " + "where " + "updated_at "
+		cmd += "between '" + nowtime.Add(-24*time.Hour*7).Format("2006-01-02") + "' and '"
+		cmd += nowtime.Add(24*time.Hour).Format("2006-01-02") + "'"
+	case "tomonth":
+		cmd += " " + "where " + "updated_at "
+		cmd += "between '" + nowtime.Add(-24*time.Hour*30).Format("2006-01-02") + "' and '"
+		cmd += nowtime.Add(24*time.Hour).Format("2006-01-02") + "'"
+	default:
+
+	}
+	rows, err := DbConnection.Query(cmd)
+	if err != nil {
+		return E_ERR
+	}
+	defer rows.Close()
+	data := filelists{}
+	for rows.Next() {
+		rows.Scan(&data.Id, &data.Name, &data.Pdfpass, &data.Zippass, &data.Tag, &data.Created_at, &data.Updated_at)
+		tmp = append(tmp, data)
+	}
+	t.List = tmp
+	return E_OK
+}
 func (t *Data) ReadId(id string) int {
 	DbConnection, _ := sql.Open("sqlite3", t.dbpath)
 	defer DbConnection.Close()

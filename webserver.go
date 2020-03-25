@@ -39,6 +39,7 @@ func webserversetup(logname string) {
 func getserch(w http.ResponseWriter, r *http.Request) {
 	output := ""
 	data := map[string]string{}
+	keyword_s := []string{"today", "toweek", "tomonth"}
 
 	urldata := urlAnalysis(r.URL.Path)
 	if len(urldata) > 2 {
@@ -47,7 +48,14 @@ func getserch(w http.ResponseWriter, r *http.Request) {
 	} else {
 		data["keyword"] = urldata[1]
 	}
-
+	for _, str := range keyword_s {
+		if data["keyword"] == str {
+			filelist_t.ReadTime(str)
+			output = filelist_t.JsonOutList()
+			fmt.Fprintf(w, "%s", output)
+			return
+		}
+	}
 	if data["keyword"] == "" {
 		output = "[]"
 	} else {
@@ -341,6 +349,7 @@ func machdatahttp(w http.ResponseWriter, r *http.Request) {
 	output = machdata(str)
 	if output != "{}" {
 		output += "," + machdata_filelist(str)
+		output = "[" + output + "]"
 	}
 	fmt.Fprintf(w, "%s", output)
 }

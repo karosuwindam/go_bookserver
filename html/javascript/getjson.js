@@ -25,7 +25,7 @@ function destory(id){
 
 function jsonOutput(str){
     var output = ""
-    var table_title = ["id","name","title"]
+    var table_title = ["id","name","title","writer","brand","booktype","ext"]
     if (meta_suburl=="filelist"){
       table_title = ["id","name","pdfpass","zippass","tag"]
     }
@@ -48,6 +48,10 @@ function jsonOutput(str){
         output += "<td>"+tmp[i].tag+"</td>"
       }else{
         output += "<td>"+tmp[i].title+"</td>"
+        output += "<td>"+tmp[i].Writer+"</td>"
+        output += "<td>"+tmp[i].brand+"</td>"
+        output += "<td>"+tmp[i].booktype+"</td>"
+        output += "<td>"+tmp[i].ext+"</td>"
       }
     //   output += " <a href='edit/"+tmp[i].id+"'>"+"edit"+"</a>"
       output += "<td><a href='show/"
@@ -96,7 +100,19 @@ function serchgetJSON(output){
   req.open("GET","/serch/filelist/"+keyword,false);
   req.send(null);
 }
-
+function fileckdata(str){
+  var output = "not file"
+  var tmp = JSON.parse(str)
+  if (str != "{}"){
+    output = tmp[0].title
+    if (tmp[1].flag == 1){
+      output += " 既存ファイルあり"
+    }else{
+      output += " file is not"
+    }
+  }
+  return output
+}
 function formdataJSON(inputElement){
   var filelist = inputElement.files;
   var filename = filelist[0].name
@@ -105,7 +121,7 @@ function formdataJSON(inputElement){
   req.onreadystatechange = function(){
     if(req.readyState == 4 && req.status == 200){
       var data=req.responseText;
-      document.getElementById("fileck").innerHTML = data;
+      document.getElementById("fileck").innerHTML = fileckdata(data);
     }
   };
   req.open("GET","/mach/"+tmp,false);
