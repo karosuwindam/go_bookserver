@@ -1,4 +1,7 @@
 var meta_suburl=""
+var jsondata
+var rowmax = 12
+var nowserchpage = 1
 function destory(id){
   myRet = confirm("destory id="+id+" OK??");
   if (myRet){
@@ -84,15 +87,75 @@ function jsonOutput(str){
     req.open("GET", url+"/"+meta_suburl, false); // HTTPメソッドとアクセスするサーバーの　URL　を指定
     req.send(null);					    // 実際にサーバーへリクエストを送信
   }
+function serchDataTagSplit(tag){
+  var output = ""
+  var tmp = tag.split(",")
+  for(var i=0;i<tmp.length;i++){
+    output += "<a href='"+"#"+"'>" +tmp[i]+ "</a>"
+    if (i==0){
+      output += "<br>\n"
+    }else{
+      output += " "
+    }
+  }
+  return output
+}
+// nowserchpage
+function serchpageout(tmp){
+  var num = tmp.length
+  var output=""
+  for(var i=0;i<num/rowmax;i++){
+    if (i>0){
+      if (nowserchpage == (i+1)){
+        output += " "+(i+1);
+      }else{
+        output += " "+"<a href='#' onclick='"+"chData("+(i+1)+");"+"'>"+(i+1)+"</a>";
+      }
+    }else{
+      if (nowserchpage == (i+1)){
+        output += (i+1);
+      }else{
+        output += "<a href='#' onclick='"+"chData("+(i+1)+");"+"'>"+(i+1)+"</a>";        
+      }
+    }
+  }
+  document.getElementById("page").innerHTML = output;
+}
+function outputSerchData(tmp,num){
+  var output = ""
+  for(var i=rowmax*(num-1);(i<tmp.length);i++){
+    output += "<div class=\"serchdata\">"
+    output += "<a href='"+"/view/"+tmp[i].id+"' target=\"_blank\">"
+    output += "<img width='250px' src='jpg/"+tmp[i].name+".jpg"+"' title='"+tmp[i].tag+"'>"
+    output +="</a><br>\n"
+    output += serchDataTagSplit(tmp[i].tag)
+    output += "<br>"
+    output += "<a href='"+"/download/zip/"+tmp[i].id+"'>"+ "zip download" +"</a>"
+    output += "</div>\n"
+    if (i>=rowmax*(num)-1){
+      break;
+    }
+  }
+  return output;
+}
 function serchDataGet(str){
   var tmp = JSON.parse(str);
-  return str;
+  jsondata = tmp;
+  serchpageout(jsondata)
+  return outputSerchData(jsondata,nowserchpage);
+}
+function chData(num){
+  nowserchpage = num -0
+  serchpageout(jsondata);
+  var tmp = outputSerchData(jsondata,nowserchpage);
+  document.getElementById("output").innerHTML = tmp;
 }
 function serchgetJSON(output){
   var keyword = document.getElementById("keyword").value
   var req = new XMLHttpRequest();
   req.onreadystatechange = function(){
     if(req.readyState == 4 && req.status == 200){
+      nowserchpage = 1
       var data=req.responseText;
       document.getElementById(output).innerHTML = serchDataGet(data);
     }

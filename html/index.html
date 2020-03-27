@@ -1,16 +1,52 @@
 <html>
     <head>
         <title>now</title>
+        <link rel="stylesheet" type="text/css" href="/css/index.css">
         <script src="/javascript/getjson.js"></script>
     </head>
     <body>
         <div> <a href="/edit.html">編集ページ</a></div>
         <div>
-            <form action="/upload/" method="post" enctype="multipart/form-data">
+            <!-- <form action="/upload/" method="post" enctype="multipart/form-data">
                 <input type="file" name="file" onchange="formdataJSON(this);" id="up_loadfile" multiple="multiple">
                 <input type="submit" value="送信">
-            </form>
-            <div id="fileck" class="fileck"></div>
+            </form> -->
+            <progress id="progress" value="0" max="100"></progress>
+            <input type="file" name="file" onchange="formdataJSON(this);"  id="file">
+            <button type="button" id="post2" onclick="uploadstart();">送信</button>
+            <div id="fileck" class="fileck"></div><br>
+
+            <script>
+            function updateProgress(e) {
+            if (e.lengthComputable) {
+                var percent = e.loaded / e.total;
+                // $("progress").attr("value", percent * 100);
+                document.getElementById("progress").value = percent * 100;
+                if (percent == 1){
+                    document.getElementById("file").disabled = false;
+                    document.getElementById("post2").disabled = false;
+                    document.getElementById("progress").value = 0;
+                    document.getElementById("file").value = "";
+                    document.getElementById("fileck").innerHTML = "";
+                }
+            }
+            }
+
+            function uploadstart() {
+                if (document.getElementById("file").files.length == 0){
+                    return 
+                }
+                document.getElementById("file").disabled = true;
+                document.getElementById("post2").disabled = true;
+                var formData = new FormData();
+                formData.append("file", document.getElementById("file").files[0]);
+
+                var request = new XMLHttpRequest();
+                request.upload.addEventListener("progress", updateProgress, false);
+                request.open("POST", "/upload/");
+                request.send(formData);
+            }
+            </script>
         </div>
         <div>
             <input type="text" name="serch" id="keyword" onkeyup="serchgetJSON('output');return false">
@@ -19,5 +55,6 @@
         <hr>
         <div id="output" class="output">test</div>
         <hr>
+        <div id="page">1</div>
     </body>
 </html>

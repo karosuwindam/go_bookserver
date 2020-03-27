@@ -8,4 +8,12 @@ booktype:<select name="booktype" id="booktype" value="<%booktype%>">
     <option value="文庫">文庫</option>
     <option value="同人誌">同人誌</option>
 </select><br>
+<script>
+    var list = document.form.booktype;
+    for (var i=0;i<list.length;i++){
+        if (list[i].value == "<%booktype%>"){
+            document.form.booktype.selectedIndex = i;
+        }
+    }
+</script>
 ext:<input type="text" name="ext" id="ext" value="<%ext%>"><br>

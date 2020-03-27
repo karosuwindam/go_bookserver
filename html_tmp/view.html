@@ -1,0 +1,124 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/css/comic.css">
+        <script type="text/javascript" src="/javascript/comic.js"></script>
+        <script type="text/javascript" src="/javascript/comic-botton.js"></script>
+        <script>
+            //url = filepass + filename + i + filetype
+            pagemax = 5-1;
+            pagemax = 196-1;
+            pagemax = <%pagemax%>-1;
+            filepass = "img/";       //ファイルパス
+            filepass = "http://bookserver:3000//filelists/send_img?id="+224+"&page=";       //ファイルパス
+            filepass = "/zip?id=<%id%>&page="
+            filename = "";           //ファイルネーム
+            filetype = ".jpg";       //ファイル拡張子
+            filetype = "";       //ファイル拡張子
+            pagenow = <%nowpage%>;
+            mouseover_f = false;
+        </script>
+        <title>comic view</title>
+    </head>
+    <body>
+        <div class="pageI0" id="page0_0" style="display: none;"><img id="pagei0_0" class="page0" src="/img/blank.jpg" alt=""></div>
+        <div class="pageI0" id ="page0_1" style="display: '';"><img id="pagei0_1" class="page0" src="/img/0.jpg" alt=""></div>
+        <div class="pageI0" id="page0_2" style="display: none;"><img id="pagei0_2" class="page0" src="/img/2.jpg" alt=""></div>
+        <div class="pageI1" id ="page1_0" style="display: none;"><img id="pagei1_0" class="page1" src="/img/blank.jpg" alt=""></div>
+        <div class="pageI1" id ="page1_1" style="display: '';"><img id="pagei1_1" class="page1" src="/img/1.jpg" alt=""></div>
+        <div class="pageI1" id ="page1_2" style="display: none;"><img id="pagei1_2" class="page3" src="/img/blank.jpg" alt=""></div>
+
+
+        <div class="help" style="display: '';">
+            <p class="title">Help</p>
+            <p class="text">本ブラウザはキーボード操作に対応しています。操作方法以下に示す通りです。</p>
+            <table>
+                <caption>キーボード操作方法について</caption>
+                <tr>
+                    <th>Key</th>
+                    <th>説明</th>
+                </tr><tr>
+                    <td>h</td>
+                    <td>ヘルプの表示非表示</td>
+                </tr><tr>
+                    <td>i</td>
+                    <td>info dataの表示非表示</td>
+                </tr><tr>
+                    <td>m</td>
+                    <td>マウスオーバー時の表示非表示</td>
+                </tr><tr>
+                    <td>p</td>
+                    <td>現在のページ表示非表示</td>
+                </tr><tr>
+                    <td>←</td>
+                    <td>2page 進む</td>
+                </tr><tr>
+                    <td>→</td>
+                    <td>2page 戻る</td>
+                </tr><tr>
+                    <td>↑</td>
+                    <td>1page 進む</td>
+                </tr><tr>
+                    <td>↓</td>
+                    <td>1page 戻る</td>
+                </tr><tr>
+                    <td>space</td>
+                    <td>1page/2page 切り替え</td>
+                </tr>
+            </table>
+        </div>
+        <div class="nowpage" style="display: '';">1/<script>document.write(pagemax+1)</script> page</div>
+        <!---->
+        <div class="leftT" name="clickA" onclick="onclickevent(lefte[0])" onmouseover="mouseover(lefte[0],'leftT');" onmouseout="mouseout(lefte[0],'leftT');"></div>
+        <div class="midT" name="clickA" onclick="onclickevent(mide[0])" onmouseover="mouseover(mide[0],'midT');" onmouseout="mouseout(mide[0],'midT');"></div>
+        <div class="midM" name="clickA" onclick="onclickevent(mide[1])" onmouseover="mouseover(mide[1],'midM');" onmouseout="mouseout(mide[1],'midM');"></div>
+        <div class="midB" name="clickA" onclick="onclickevent(mide[2])" onmouseover="mouseover(mide[2],'midB');" onmouseout="mouseout(mide[2],'midB');"></div>
+        <div class="rightT" name="clickA" onclick="onclickevent(righte[0])"  onmouseover="mouseover(righte[0],'rightT');" onmouseout="mouseout(righte[0],'rightT');"></div>
+
+        <div class="listdata" id="listl" style="display: none;">
+        </div>
+        <a class="button" id="list" href=javascript:void(0); onclick="listonoff();return false" style="float:left">list</a>
+        <div class="sidber" style="display: ;">
+            <input class="sidber" id="pageslider" type="range" value="0" min="0" max="10" step="1"
+            onchange="changeValue(this.value)"
+            oninput="oninputvalue(this.value)">
+            <div class="page_tmp" id="view_tmp_page" style="color: white;">0</div>
+            <script>
+                function oninputvalue(value){
+                    var page = document.getElementById('view_tmp_page');
+                    var tmp = value -0;
+                    page.style.display = "";
+                    page.innerHTML = tmp +1;
+                }
+                function changeValue(value) {
+                    var page = document.getElementById('view_tmp_page');
+                    page.style.display = "none";
+                    loaddata = (value==0);
+                    nowpage(value);
+                }
+                var slider = document.getElementById("pageslider");
+                slider.max = pagemax;
+                changeValue(pagenow);
+            </script>
+        </div>
+        <div class="output" style="display: none;">
+            <div><%name%></div>
+            <div><%title%></div>
+            <div><%tag%></div>
+        </div>
+        <script>
+            function notnum(str){
+                var i
+                for(i=0;i<str.length;i++){
+                    if (isNaN(str[str.length-i-1])){
+                        break;
+                    }
+                }
+                return str.substr(0,str.length-i);
+            }
+            var str = "<%name%>"
+            var tag = "<%tag%>".split(",")
+            listdatawrite();
+            getlist(notnum(tag[0]));
+        </script>
+    </body>
+</html>

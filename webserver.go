@@ -11,10 +11,10 @@ import (
 	"./logoutput"
 )
 
-const serverip = ""
-const serverport = "8080"
+// const serverip = ""
+// const serverport = "8080"
 
-const databass = "test1.db"
+// const databass = "test1.db"
 
 // const databass = "development.sqlite3"
 
@@ -31,8 +31,8 @@ func webserversetup(logname string) {
 	Logout.Setup("upload.log")
 	Logdata.Setup(logname)
 	// bookname_t.New("development.sqlite3")
-	bookname_t.New(databass)
-	filelist_t.New(databass)
+	bookname_t.New(ServersetUp.Serverdata.Booknamedb)
+	filelist_t.New(ServersetUp.Serverdata.Filelistdb)
 	websetup_flag = true
 }
 
@@ -61,7 +61,7 @@ func getserch(w http.ResponseWriter, r *http.Request) {
 	} else {
 		tmp := "name like '%" + data["keyword"] + "%'"
 		if data["pass"] == "filelist" {
-			tmp += " or tag like '%" + data["keyword"] + "%'"
+			tmp += " or tag like '%" + data["keyword"] + "%' order by name"
 			filelist_t.Read(tmp)
 			output = filelist_t.JsonOutList()
 		} else {
@@ -307,13 +307,14 @@ func addNew(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "%s", output)
 }
-func machdata(str string) string {
-	output := ""
+func machdata(str string) (string, string) {
+	output := "{}"
 	data := map[string]string{}
+	kan := ""
 
 	data["keyword"] = str
 	if data["keyword"] == "" {
-		return "{}"
+		return "{}", kan
 	}
 	bookname_t.ReadName(data["keyword"])
 	if bookname_t.Tmp.Id == 0 {
@@ -321,16 +322,17 @@ func machdata(str string) string {
 			bookname_t.ReadName(data["keyword"][0 : len(data["keyword"])-i])
 			if bookname_t.Tmp.Id != 0 {
 				output = bookname_t.JsonOutTmp()
+				kan = data["keyword"][len(data["keyword"])-i : len(data["keyword"])]
 				break
 			} else {
 
-				return "{}"
+				// return "{}", kan
 			}
 		}
 	} else {
 		output = bookname_t.JsonOutTmp()
 	}
-	return output
+	return output, kan
 }
 func machdata_filelist(str string) string {
 	output := ""
@@ -346,7 +348,7 @@ func machdatahttp(w http.ResponseWriter, r *http.Request) {
 	output := ""
 	urldata := urlAnalysis(r.URL.Path)
 	str := urldata[1]
-	output = machdata(str)
+	output, _ = machdata(str)
 	if output != "{}" {
 		output += "," + machdata_filelist(str)
 		output = "[" + output + "]"
@@ -358,7 +360,7 @@ func webserverstart() {
 		fmt.Println("web server not init")
 		return
 	}
-	Logdata.Out(1, "web server start %v:%v", serverip, serverport)
+	Logdata.Out(1, "web server start %v:%v", ServersetUp.Serverdata.Serverip, ServersetUp.Serverdata.Serverport)
 	http.HandleFunc("/list/", getlist)
 	http.HandleFunc("/serch/", getserch)
 	http.HandleFunc("/mach/", machdatahttp)
@@ -367,10 +369,10 @@ func webserverstart() {
 	http.HandleFunc("/destory/", destory)
 	http.HandleFunc("/show/", showdata)
 	http.HandleFunc("/upload/", upload)
-	// http.HandleFunc("/zip", zipdata)
-	// http.HandleFunc("/ziplist", ziplist)
-	// http.HandleFunc("/view/", view)
+	http.HandleFunc("/zip", zipdata)
+	http.HandleFunc("/view/", view)
+	http.HandleFunc("/download/", download)
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./html"))))
-	http.ListenAndServe(serverip+":"+serverport, nil)
+	http.ListenAndServe(ServersetUp.Serverdata.Serverip+":"+ServersetUp.Serverdata.Serverport, nil)
 
 }
