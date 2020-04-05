@@ -46,14 +46,31 @@
                 request.open("POST", "/upload/");
                 request.send(formData);
             }
+            function updataserch(str){
+                for ( var i=1;i<str.length;i++){
+                    var tmp = str.slice(-i) -0;
+                    if (isNaN(tmp)){
+                        tmp = str.slice(0,str.length-i+1)
+                        break
+                    }
+                }
+                document.getElementById("keyword").value = tmp;
+                serchgetJSON('output');
+            }
             </script>
         </div>
         <div>
             <input type="text" name="serch" id="keyword" onkeyup="serchgetJSON('output');return false">
             <input type="button" value="serch" onclick="serchgetJSON('output');return false">
+            <a href="javascript:void(0);" onclick="updataserch('today');">今日</a>
+            <a href="javascript:void(0);" onclick="updataserch('toweek');">今週</a>
+            <a href="javascript:void(0);" onclick="updataserch('tomonth');">今月</a>
+            <a href="javascript:void(0);" onclick="updataserch('rand');">rand</a>
         </div>
         <hr>
-        <div id="output" class="output">test</div>
+        <center>
+            <div id="output" class="output">test</div>
+        </center>
         <hr>
         <div id="page">1</div>
     </body>

@@ -158,7 +158,7 @@ func uploadCHdata(str string) {
 		fmt.Println(subcmd)
 		err := exec.Command("sh", "-c", subcmd).Run()
 		if err != nil {
-
+			Logdata.Out(0, "pdfimages cmd err file:%v", filename)
 		} else {
 			subcmd = "cp " + "tmp/" + filename + "-000.jpg " + "html/jpg/" + filename + ".jpg"
 			_ = exec.Command("sh", "-c", subcmd).Run()

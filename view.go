@@ -47,7 +47,7 @@ func zipdata(w http.ResponseWriter, r *http.Request) {
 	filename := t_dir.Data[num-1].RootPath + t_dir.Data[num-1].Name
 	if filelist_t.Tmp.Id != 0 {
 		filename = ServersetUp.Zippath + filelist_t.Tmp.Zippass
-		fmt.Println(filename + " page:" + data["page"])
+		// fmt.Println(filename + " page:" + data["page"])
 	}
 	t.ZipOpenSetup(filename)
 	t.ZipReadList()
@@ -61,11 +61,12 @@ func view(w http.ResponseWriter, r *http.Request) {
 	var t zipopen.File
 	var t_dir dirread.Dirtype
 	var datap map[string]string
+	var filename string
 	url := r.URL.Path
 	data := map[string]string{}
 	datap = data
 	data["id"] = "1"
-	id := 0
+	// id := 0
 	data["nowpage"] = "0"
 
 	t_dir.Setup(ServersetUp.Zippath)
@@ -74,13 +75,13 @@ func view(w http.ResponseWriter, r *http.Request) {
 	i := 0
 	for _, str := range strings.Split(url[1:], "/") {
 		if (i == 1) && (str != "") {
-			tmp, _ := strconv.Atoi(str)
-			if tmp > 0 {
-				if len(t_dir.Data) >= tmp {
-					data["id"] = str
-					id = tmp - 1
-				}
-			}
+			// tmp, _ := strconv.Atoi(str)
+			//			if tmp > 0 {
+			//				if len(t_dir.Data) >= tmp {
+			data["id"] = str
+			// id = tmp - 1
+			//				}
+			//			}
 		}
 		if (i == 2) && (str != "") {
 			tmp, _ := strconv.Atoi(str)
@@ -92,14 +93,25 @@ func view(w http.ResponseWriter, r *http.Request) {
 		i++
 	}
 	filelist_t.ReadId(data["id"])
-	data["title"] = t_dir.Data[id].Name[1:]
-	filename := t_dir.Data[id].RootPath + t_dir.Data[id].Name
+	//i = filelist_t.Tmp.Id
+	//if i < 1 {
+	//	Logout.Out(1, "id=%v err\n", data["id"])
+	//	filelist_t.ReadId("1")
+	//}
+	// data["title"] = t_dir.Data[id].Name[1:]
+	// filename := t_dir.Data[id].RootPath + t_dir.Data[id].Name
 	if filelist_t.Tmp.Id != 0 {
 		filename = ServersetUp.Zippath + filelist_t.Tmp.Zippass
 		data["name"] = filelist_t.Tmp.Name
 		data["title"] = filelist_t.Tmp.Zippass
 		data["tag"] = filelist_t.Tmp.Tag
 		fmt.Println(filename)
+	} else {
+		fmt.Fprintf(w, "%s", "err id")
+		return
+		// id = 1
+		// filename = t_dir.Data[id].RootPath + t_dir.Data[id].Name
+		// fmt.Println(filename)
 	}
 	t.ZipOpenSetup(filename)
 	t.ZipReadList()

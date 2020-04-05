@@ -33,6 +33,10 @@ func webserversetup(logname string) {
 	// bookname_t.New("development.sqlite3")
 	bookname_t.New(ServersetUp.Serverdata.Booknamedb)
 	filelist_t.New(ServersetUp.Serverdata.Filelistdb)
+	bookname_t.CreatDb()
+	filelist_t.CreatDb()
+	Logdata.Out(0, "Bookname db Read %v\n", ServersetUp.Serverdata.Booknamedb)
+	Logdata.Out(0, "filelist db Read %v\n", ServersetUp.Serverdata.Filelistdb)
 	websetup_flag = true
 }
 
@@ -55,6 +59,12 @@ func getserch(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "%s", output)
 			return
 		}
+	}
+	if data["keyword"] == "rand" {
+		filelist_t.ReadRand()
+		output = filelist_t.JsonOutList()
+		fmt.Fprintf(w, "%s", output)
+		return
 	}
 	if data["keyword"] == "" {
 		output = "[]"
@@ -332,6 +342,10 @@ func machdata(str string) (string, string) {
 	} else {
 		output = bookname_t.JsonOutTmp()
 	}
+	num, _ := strconv.Atoi(kan)
+	if num < 10 {
+		kan = "0" + kan
+	}
 	return output, kan
 }
 func machdata_filelist(str string) string {
@@ -360,7 +374,7 @@ func webserverstart() {
 		fmt.Println("web server not init")
 		return
 	}
-	Logdata.Out(1, "web server start %v:%v", ServersetUp.Serverdata.Serverip, ServersetUp.Serverdata.Serverport)
+	Logdata.Out(1, "web server start %v:%v\n", ServersetUp.Serverdata.Serverip, ServersetUp.Serverdata.Serverport)
 	http.HandleFunc("/list/", getlist)
 	http.HandleFunc("/serch/", getserch)
 	http.HandleFunc("/mach/", machdatahttp)

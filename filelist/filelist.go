@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"strconv"
 	"time"
 )
@@ -100,6 +101,38 @@ func (t *Data) Read(s string) int {
 		rows.Scan(&data.Id, &data.Name, &data.Pdfpass, &data.Zippass, &data.Tag, &data.Created_at, &data.Updated_at)
 		tmp = append(tmp, data)
 	}
+	t.List = tmp
+	return E_OK
+}
+func (t *Data) ReadRand() int {
+	tmp := []filelists{}
+	t.ReadAll()
+	max := len(t.List) - 1
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < 3; i++ {
+		t.ReadId(strconv.Itoa(rand.Intn(max)))
+		if t.Tmp.Id != 0 {
+			break
+		}
+	}
+	// t.ReadId("1")
+	tmp = append(tmp, t.Tmp)
+	for i := 0; i < 3; i++ {
+		t.ReadId(strconv.Itoa(rand.Intn(max)))
+		if t.Tmp.Id != 0 {
+			break
+		}
+	}
+	// t.ReadId("2")
+	tmp = append(tmp, t.Tmp)
+	for i := 0; i < 3; i++ {
+		t.ReadId(strconv.Itoa(rand.Intn(max)))
+		if t.Tmp.Id != 0 {
+			break
+		}
+	}
+	// t.ReadId("3")
+	tmp = append(tmp, t.Tmp)
 	t.List = tmp
 	return E_OK
 }

@@ -1,6 +1,7 @@
 var meta_suburl=""
 var jsondata
-var rowmax = 12
+var rowmax = 8
+var rownum = 4
 var nowserchpage = 1
 function destory(id){
   myRet = confirm("destory id="+id+" OK??");
@@ -91,7 +92,10 @@ function serchDataTagSplit(tag){
   var output = ""
   var tmp = tag.split(",")
   for(var i=0;i<tmp.length;i++){
-    output += "<a href='"+"#"+"'>" +tmp[i]+ "</a>"
+    //updataserch
+    output += "<a href='"+"javascript:void(0);"+"'"
+    output += " onclick="+"\"updataserch('"+tmp[i]+"');\""
+    output += ">" +tmp[i]+ "</a>"
     if (i==0){
       output += "<br>\n"
     }else{
@@ -109,7 +113,7 @@ function serchpageout(tmp){
       if (nowserchpage == (i+1)){
         output += " "+(i+1);
       }else{
-        output += " "+"<a href='#' onclick='"+"chData("+(i+1)+");"+"'>"+(i+1)+"</a>";
+        output += " "+"<a href=\"javascript:void(0);\" onclick='"+"chData("+(i+1)+");"+"'>"+(i+1)+"</a>";
       }
     }else{
       if (nowserchpage == (i+1)){
@@ -131,7 +135,10 @@ function outputSerchData(tmp,num){
     output += serchDataTagSplit(tmp[i].tag)
     output += "<br>"
     output += "<a href='"+"/download/zip/"+tmp[i].id+"'>"+ "zip download" +"</a>"
+    output += " <a href='"+"/download/pdf/"+tmp[i].id+"'>"+ "pdf download" +"</a>"
     output += "</div>\n"
+    if (i%rownum==(rownum-1)){
+    output += "<br>"}
     if (i>=rowmax*(num)-1){
       break;
     }

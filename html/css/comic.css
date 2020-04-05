@@ -1,6 +1,9 @@
 /* // Place all the styles related to the filelists controller here. */
 /* // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/ */
+body{
+  background-color: black;
+}
 .block__element{
   display: table-cell;
   width: 250px;
@@ -9,14 +12,22 @@
 }
 div.leftT{font-size: 20pt;position: absolute;top: 0%;left: 0%; width: 20%;height: 100%;
     /* border:inset 10px #ff0000; */
+    color: white;
     border:none;
 }
-div.midT{font-size: 20pt;position: absolute;top: 0%;left: 20%; width: 60%;height: 20%;border:none;}
-div.midM{font-size: 20pt;position: absolute;top: 20%;left: 20%; width: 60%;height: 60%;border:none;}
-div.midB{font-size: 20pt;position: absolute;top: 80%;left: 20%; width: 60%;height: 20%;border:none;}
-div.rightT{font-size: 20pt;position: absolute;top: 0%;left: 80%; width: 20%;height: 100%;border:none; text-align: right;}
-div.pageI0{position: absolute;top:0%;left:50%;width:50%;border: none;height: 100%; text-align: left; /*background-color: red*/}
-div.pageI1{position: absolute;top:0%;left:0%;width:50%;border: none;height: 100%; text-align: right; /*background-color: blue*/}
+div.midT{font-size: 20pt;position: absolute;top: 0%;left: 20%; width: 60%;height: 20%;
+  border:none;}
+div.midM{font-size: 20pt;position: absolute;top: 20%;left: 20%; width: 60%;height: 60%;
+  border:none;}
+div.midB{font-size: 20pt;position: absolute;top: 80%;left: 20%; width: 60%;height: 20%;
+  border:none;}
+div.rightT{font-size: 20pt;position: absolute;top: 0%;left: 80%; width: 20%;height: 100%;
+  color: white;
+  border:none; text-align: right;}
+div.pageI0{position: absolute;top:0%;left:50%;width:50%;
+  border: none;height: 100%; text-align: left; /*background-color: red*/}
+div.pageI1{position: absolute;top:0%;left:0%;width:50%;
+  border: none;height: 100%; text-align: right; /*background-color: blue*/}
 div.output{position: absolute;top:100%;left: 0%;}
 table {margin-left:auto;margin-right:auto;
     color: white;
@@ -34,6 +45,10 @@ div.sidber{
 }
 input.sidber{
   width: 90%;
+}
+div.output{
+  background-color: white;
+  width: 100%;
 }
 div.help{
   text-align:center;

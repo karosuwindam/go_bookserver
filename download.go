@@ -20,7 +20,7 @@ func download(w http.ResponseWriter, r *http.Request) {
 
 	filelist_t.ReadId(data["id"])
 	if filelist_t.Tmp.Id == 0 {
-		Logout.Out(1, "download err URL:%v", r.URL.Path)
+		Logout.Out(1, "download err URL:%v\n", r.URL.Path)
 		fmt.Fprintf(w, "%s", "download err")
 		return
 	}
@@ -31,7 +31,7 @@ func download(w http.ResponseWriter, r *http.Request) {
 	} else if data["type"] == "pdf" {
 		filepass = ServersetUp.Pdfpath + filelist_t.Tmp.Pdfpass
 	} else {
-		Logout.Out(1, "download err URL:%v", r.URL.Path)
+		Logout.Out(1, "download err URL:%v\n", r.URL.Path)
 		fmt.Fprintf(w, "%s", "download err")
 		return
 	}
@@ -55,7 +55,7 @@ func download(w http.ResponseWriter, r *http.Request) {
 		}
 		buffer = append(buffer, buf[:n]...)
 	}
-	Logout.Out(1, "download URL:%v,Name:%v", r.URL.Path, filelist_t.Tmp.Name)
+	Logout.Out(1, "download URL:%v,Name:%v\n", r.URL.Path, filelist_t.Tmp.Name)
 	if data["type"] == "zip" {
 		// ファイル名
 		w.Header().Set("Content-Disposition", "attachment; filename="+filelist_t.Tmp.Zippass)

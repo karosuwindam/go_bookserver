@@ -10,7 +10,7 @@ var filename = "";          //ファイルネーム
 var filetype = ".jpg";      //ファイル拡張子
 var mouseover_f = true;     //mouns over flag
 var loaddata = true;
-var view_message = ["Next","1 page next","back","1/2 page change","view info"]
+var view_message = ["Next","1 page next","back","1/2 page change","page view"]
 document.onkeydown = function(event){
     var keyEvent = event||window.event;
     console.log("KEYEVENT:"+keyEvent.keyCode);
@@ -146,7 +146,8 @@ function onclickevent(num)
             chPageOneTwe(2);
             break;
         case 4:
-            chIndexView();
+            pageviewonoff();
+            // chIndexView();
             break;
         default:
             break;
