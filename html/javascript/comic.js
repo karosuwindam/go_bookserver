@@ -384,7 +384,15 @@ function chPageOneTwe(mode){
             l_imgtmp[i].style.display = "none"
         }
     }
-
+    if (pagenow == 0){
+        if(modeonetwe){
+            document.getElementById("pagei0_1").src = "/img/blank.jpg";
+            document.getElementById("pagei1_1").src = filepass + filename + (pagenow) + filetype;
+        }else{
+            document.getElementById("pagei0_1").src = filepass + filename + pagenow + filetype;
+            document.getElementById("pagei1_1").src = filepass + filename + (pagenow+1) + filetype;
+        }
+    }
 }
 
 function chIndexView(){

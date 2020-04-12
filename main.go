@@ -79,6 +79,14 @@ func main() {
 		fmt.Println("err not install pdfimages", "run sudo apt install poppler-utils")
 		return
 	}
+	if f, err := os.Stat(ServersetUp.Serverdata.TmpPass); os.IsNotExist(err) || !f.IsDir() {
+		fmt.Printf("%vディレクトリは存在しません！\n", ServersetUp.Serverdata.TmpPass)
+		return
+	}
+	if f, err := os.Stat(ServersetUp.Uploadpath); os.IsNotExist(err) || !f.IsDir() {
+		fmt.Printf("%vディレクトリは存在しません！\n", ServersetUp.Uploadpath)
+		return
+	}
 	webserversetup("output.log")
 	webserverstart()
 	return

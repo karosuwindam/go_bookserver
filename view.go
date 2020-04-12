@@ -114,10 +114,16 @@ func view(w http.ResponseWriter, r *http.Request) {
 		// fmt.Println(filename)
 	}
 	t.ZipOpenSetup(filename)
-	t.ZipReadList()
-	data["pagemax"] = strconv.Itoa(t.Count)
-	// output := ConvertData(ReadHtml("html/comic/view.html"), datap)
-	output := ConvertData(ReadHtml("html_tmp/view.html"), datap)
-	fmt.Fprintf(w, output)
-	// fmt.Fprintf(w, "id=%vnowpage=%vpagemax=%v", data["id"], data["nowpage"], data["pagemax"])
+	if t.Flag {
+		t.ZipReadList()
+		data["pagemax"] = strconv.Itoa(t.Count)
+		// output := ConvertData(ReadHtml("html/comic/view.html"), datap)
+		output := ConvertData(ReadHtml("html_tmp/view.html"), datap)
+		fmt.Fprintf(w, output)
+		// fmt.Fprintf(w, "id=%vnowpage=%vpagemax=%v", data["id"], data["nowpage"], data["pagemax"])
+
+	} else {
+
+		fmt.Fprintf(w, "zip file not")
+	}
 }

@@ -5,20 +5,25 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"os"
 )
 
 type File struct {
 	path  string
 	Name  []string
 	Count int
+	Flag  bool
 }
 
 func (t *File) ZipOpenSetup(s string) {
 	t.path = s
 	t.Count = 0
-
+	t.Flag = t.exists()
 }
-
+func (t *File) exists() bool {
+	_, err := os.Stat(t.path)
+	return err == nil
+}
 func (t *File) ZipReadList() {
 	var tmp []string
 	i := 0

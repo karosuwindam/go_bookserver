@@ -72,7 +72,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			fp.WriteAt(data, tmplength)
 			tmplength += int64(n)
 		}
-		go uploadCHdata(writefilename)
+		go uploadCHdata(writefilename, bookname_t.Tmp.Writer, bookname_t.Tmp.Title)
 		fmt.Printf("POST\n")
 	} else {
 		url := r.URL.Path
@@ -140,6 +140,9 @@ func dataBaseUpdate(name string) {
 		i++
 	}
 	_, kan := machdata(filename)
+	if kan == "0" {
+		kan = ""
+	}
 	if typename == "pdf" {
 
 	}
@@ -149,12 +152,15 @@ func dataBaseUpdate(name string) {
 	filelist_t.Add(filename, pdfname, zipname, tag)
 }
 
-func uploadCHdata(str string) {
+func uploadCHdata(str, writer, title string) {
 	var dirfolder dirread.Dirtype
 	if strings.Index(str, "pdf") > 0 {
 		filename := str[0 : len(str)-4]
 		subcmd := "pdfimages" + " " + ServersetUp.Uploadpath + "/pdf" + "/" + str + " " + "tmp" + "/" + filename + " " + "-j"
 		_, kan := machdata(filename)
+		if kan == "0" {
+			kan = ""
+		}
 		fmt.Println(subcmd)
 		err := exec.Command("sh", "-c", subcmd).Run()
 		if err != nil {
@@ -164,7 +170,8 @@ func uploadCHdata(str string) {
 			_ = exec.Command("sh", "-c", subcmd).Run()
 			dirfolder.Setup("tmp")
 			_ = dirfolder.Read("/")
-			zipname := "[" + bookname_t.Tmp.Writer + "]" + bookname_t.Tmp.Title + kan + ".zip"
+			// zipname := "[" + bookname_t.Tmp.Writer + "]" + bookname_t.Tmp.Title + kan + ".zip"
+			zipname := "[" + writer + "]" + title + kan + ".zip"
 			dest, errzip := os.Create(ServersetUp.Uploadpath + "/" + "zip" + "/" + zipname)
 			if errzip != nil {
 				return
