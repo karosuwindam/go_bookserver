@@ -5,10 +5,58 @@ function listonoff(){
     list_flag = !list_flag;
     if(list_flag){
         list_div.style.display = "";
+        document.getElementById("maxmin").style.display = "none";
     }else{
         list_div.style.display = "none";
+        document.getElementById("maxmin").style.display = "";
     }
 }
+var maxmin = false;
+function maxminonoff(){
+    if( ! enabledFullScreen() ){
+        alert("フルスクリーンに対応していません");
+        return(false);
+    }
+    if (!maxmin){
+        goFullScreen();
+        document.getElementById("maxmin").innerHTML = "Min";
+    }else{
+        cancelFullScreen();
+        document.getElementById("maxmin").innerHTML = "Max";
+    }
+    maxmin = !maxmin;
+}
+/**
+ * フルスクリーンが利用できるか
+ *
+ * @return {boolean}
+ */
+function enabledFullScreen(){
+    return(
+      document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen || document.msFullscreenEnabled
+    );
+  }
+  
+/**
+ * フルスクリーンにする
+ *
+ * @param {object} [element]
+ */
+function goFullScreen(element=null){
+    const doc = window.document;
+    const docEl = (element === null)?  doc.documentElement:element;
+    let requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    requestFullScreen.call(docEl);
+  }
+  
+  /**
+   * フルスクリーンをやめる
+   */
+  function cancelFullScreen(){
+    const doc = window.document;
+    const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+    cancelFullScreen.call(doc);
+  }
 function jsonOutput(str){
     var output = ""
     var tmp = JSON.parse(str)
