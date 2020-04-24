@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"./bookname"
+	"./copyfile"
 	"./filelist"
 	"./logoutput"
 )
@@ -24,6 +25,7 @@ var Logdata logoutput.Data
 // Logdata.Setup("output.log")
 var bookname_t bookname.Data
 var filelist_t filelist.Data
+var copyfile_t copyfile.Data
 
 var Logout logoutput.Data
 
@@ -33,10 +35,13 @@ func webserversetup(logname string) {
 	// bookname_t.New("development.sqlite3")
 	bookname_t.New(ServersetUp.Serverdata.Booknamedb)
 	filelist_t.New(ServersetUp.Serverdata.Filelistdb)
+	copyfile_t.New(ServersetUp.Serverdata.Copyfiledb)
 	bookname_t.CreatDb()
 	filelist_t.CreatDb()
+	copyfile_t.CreatDb()
 	Logdata.Out(0, "Bookname db Read %v\n", ServersetUp.Serverdata.Booknamedb)
 	Logdata.Out(0, "filelist db Read %v\n", ServersetUp.Serverdata.Filelistdb)
+	Logdata.Out(0, "copylist db Read %v\n", ServersetUp.Serverdata.Copyfiledb)
 	websetup_flag = true
 }
 
@@ -74,6 +79,16 @@ func getserch(w http.ResponseWriter, r *http.Request) {
 			tmp += " or tag like '%" + data["keyword"] + "%' order by name"
 			filelist_t.Read(tmp)
 			output = filelist_t.JsonOutList()
+		} else if data["pass"] == "copyfile" {
+			if data["keyword"] == "true" {
+				tmp = "copyflag='1'"
+			} else if data["keyword"] == "false" {
+				tmp = "copyflag='0'"
+			} else {
+				tmp = "zippass like '%" + data["keyword"] + "%' order by copyflag"
+			}
+			copyfile_t.Read(tmp)
+			output = copyfile_t.JsonOutList()
 		} else {
 			tmp += " or title like '%" + data["keyword"] + "%'"
 			tmp += " or writer like '%" + data["keyword"] + "%'"
@@ -91,6 +106,9 @@ func getlist(w http.ResponseWriter, r *http.Request) {
 	if urldata[1] == "filelist" {
 		filelist_t.ReadAll()
 		output = filelist_t.JsonOutList()
+	} else if urldata[1] == "copyfile" {
+		copyfile_t.ReadAll()
+		output = copyfile_t.JsonOutList()
 	} else {
 		bookname_t.ReadAll()
 		output = bookname_t.JsonOutList()
@@ -124,6 +142,9 @@ func editData(w http.ResponseWriter, r *http.Request) {
 	if url_data["url"] == "filelist" {
 		typedata_tmp = []string{"name", "pdfpass", "zippass", "tag"}
 		tmp, ret = readFilelistId(url_data["id"])
+	} else if url_data["url"] == "copyfile" {
+		typedata_tmp = []string{"zippass", "copyflag", "filesize"}
+		tmp, ret = readCopyfileId(url_data["id"])
 	} else {
 		tmp, ret = readBooknameId(url_data["id"])
 	}
@@ -152,6 +173,12 @@ func editData(w http.ResponseWriter, r *http.Request) {
 			}
 			if url_data["url"] == "filelist" {
 				filelist_t.Update(url_data["id"], tmp["name"], tmp["pdfpass"], tmp["zippass"], tmp["tag"])
+			} else if url_data["url"] == "copyfile" {
+				copyflag, err1 := strconv.Atoi(tmp["copyflag"])
+				filesize, err2 := strconv.Atoi(tmp["filesize"])
+				if (err1 == nil) && (err2 == nil) {
+					copyfile_t.Update(url_data["id"], tmp["zippass"], copyflag, filesize)
+				}
 			} else {
 				bookname_t.Update(url_data["id"], tmp["name"], tmp["title"], tmp["writer"], tmp["brand"], tmp["booktype"], tmp["ext"])
 			}
@@ -164,6 +191,9 @@ func editData(w http.ResponseWriter, r *http.Request) {
 		output = "GET"
 		if url_data["url"] == "filelist" {
 			tmp["inputdata"] = ConvertData(ReadHtml("html_tmp/filelist/new.html"), tmp)
+			output = ConvertData(ReadHtml("html_tmp/new_.html"), tmp)
+		} else if url_data["url"] == "copyfile" {
+			tmp["inputdata"] = ConvertData(ReadHtml("html_tmp/copyfile/new.html"), tmp)
 			output = ConvertData(ReadHtml("html_tmp/new_.html"), tmp)
 		} else {
 			output = ConvertData(ReadHtml("html_tmp/new.html"), tmp)
@@ -186,6 +216,10 @@ func destory(w http.ResponseWriter, r *http.Request) {
 		if tmp["url"] == "filelist" {
 			filelist_t.ReadId(tmp["id"])
 			filelist_t.Delete(tmp["id"])
+			output = filelist_t.JsonOutTmp()
+		} else if tmp["url"] == "copyfile" {
+			copyfile_t.ReadId(tmp["id"])
+			copyfile_t.Delete(tmp["id"])
 			output = filelist_t.JsonOutTmp()
 		} else {
 			bookname_t.ReadId(tmp["id"])
@@ -210,6 +244,17 @@ func readBooknameId(str string) (map[string]string, int) {
 	tmp["brand"] = bookname_t.Tmp.Brand
 	tmp["booktype"] = bookname_t.Tmp.Booktype
 	tmp["ext"] = bookname_t.Tmp.Ext
+	return tmp, 0
+}
+func readCopyfileId(str string) (map[string]string, int) {
+	tmp := map[string]string{}
+	if copyfile_t.ReadId(str) < 0 {
+		return tmp, -1
+	}
+	tmp["id"] = strconv.Itoa(copyfile_t.Tmp.Id)
+	tmp["zippass"] = copyfile_t.Tmp.Zippass
+	tmp["filesize"] = strconv.Itoa(copyfile_t.Tmp.Filesize)
+	tmp["copyflag"] = strconv.Itoa(copyfile_t.Tmp.Copyflag)
 	return tmp, 0
 }
 func readFilelistId(str string) (map[string]string, int) {
@@ -239,6 +284,8 @@ func showdata(w http.ResponseWriter, r *http.Request) {
 	}
 	if data["pass"] == "filelist" {
 		tmp, err = readFilelistId(data["id"])
+	} else if data["pass"] == "copyfile" {
+		tmp, err = readCopyfileId(data["id"])
 	} else {
 		tmp, err = readBooknameId(data["id"])
 	}
@@ -254,6 +301,8 @@ func showdata(w http.ResponseWriter, r *http.Request) {
 		// output = ConvertData(ReadHtml("html_tmp/new.html"), tmp)
 		if data["pass"] == "filelist" {
 			tmp["show"] = ConvertData(ReadHtml("html_tmp/filelist/show.html"), tmp)
+		} else if data["pass"] == "copyfile" {
+			tmp["show"] = ConvertData(ReadHtml("html_tmp/copyfile/show.html"), tmp)
 		} else {
 			tmp["show"] = ConvertData(ReadHtml("html_tmp/bookname/show.html"), tmp)
 		}
@@ -275,6 +324,8 @@ func addNew(w http.ResponseWriter, r *http.Request) {
 	var typedata_tmp []string
 	if urldata[1] == "filelist" {
 		typedata_tmp = []string{"name", "pdfpass", "zippass", "tag"}
+	} else if urldata[1] == "copyfile" {
+		typedata_tmp = []string{"zippass", "copyflag", "filesize"}
 	} else {
 		typedata_tmp = []string{"name", "title", "writer", "brand", "booktype", "ext"}
 	}
@@ -286,7 +337,7 @@ func addNew(w http.ResponseWriter, r *http.Request) {
 			output = "POST err"
 		} else {
 			for _, keyword := range typedata_tmp {
-				if (r.FormValue(keyword) != "") && (keyword == "name") {
+				if (r.FormValue(keyword) != "") && (keyword == "name") || (urldata[1] == "copyfile") {
 					addnew_flag = true
 				}
 				tmp[keyword] = r.FormValue(keyword)
@@ -295,6 +346,17 @@ func addNew(w http.ResponseWriter, r *http.Request) {
 			if addnew_flag {
 				if urldata[1] == "filelist" {
 					filelist_t.Add(tmp["name"], tmp["pdfpass"], tmp["zippass"], tmp["tag"])
+					output = filelist_t.JsonOutTmp()
+				} else if urldata[1] == "copyfile" {
+					copyflag, err1 := strconv.Atoi(tmp["copyflag"])
+					filesize, err2 := strconv.Atoi(tmp["filesize"])
+					if err1 != nil {
+						copyflag = 0
+					}
+					if err2 != nil {
+						filesize = 0
+					}
+					copyfile_t.Add(tmp["zippass"], copyflag, filesize)
 					output = filelist_t.JsonOutTmp()
 				} else {
 					bookname_t.Add(tmp["name"], tmp["title"], tmp["writer"], tmp["brand"], tmp["booktype"], tmp["ext"])
@@ -310,6 +372,8 @@ func addNew(w http.ResponseWriter, r *http.Request) {
 		// output = ConvertData(ReadHtml("html_tmp/new.html"), tmp)
 		if urldata[1] == "filelist" {
 			tmp["inputdata"] = ConvertData(ReadHtml("html_tmp/filelist/new.html"), tmp)
+		} else if urldata[1] == "copyfile" {
+			tmp["inputdata"] = ConvertData(ReadHtml("html_tmp/copyfile/new.html"), tmp)
 		} else {
 			tmp["inputdata"] = ConvertData(ReadHtml("html_tmp/bookname/new.html"), tmp)
 		}
@@ -376,6 +440,7 @@ func webserverstart() {
 	}
 	Logdata.Out(1, "web server start %v:%v\n", ServersetUp.Serverdata.Serverip, ServersetUp.Serverdata.Serverport)
 	http.HandleFunc("/list/", getlist)
+	http.HandleFunc("/ckbox", ckbox)
 	http.HandleFunc("/serch/", getserch)
 	http.HandleFunc("/mach/", machdatahttp)
 	http.HandleFunc("/new/", addNew)

@@ -23,12 +23,14 @@ type serverdata struct {
 	Serverport string `json:"serverport"`
 	Booknamedb string `json:"booknamedb"`
 	Filelistdb string `json:"filelistdb"`
+	Copyfiledb string `json:"copyfiledb"`
 	TmpPass    string `json:"tmppass"`
 }
 type Setupdate struct {
 	Serverdata serverdata `json:"serverdata"`
 	Zippath    string     `json:"zippath"`
 	Pdfpath    string     `json:"pdfpath"`
+	Publicpath string     `json:"pulicpath`
 	Uploadpath string     `json:"uploadpath"`
 }
 
@@ -48,6 +50,7 @@ func main() {
 		ServersetUp.Serverdata.Serverport = "8080"
 		ServersetUp.Serverdata.Booknamedb = "test1.db"
 		ServersetUp.Serverdata.Filelistdb = "test1.db"
+		ServersetUp.Serverdata.Copyfiledb = "test1.db"
 		ServersetUp.Serverdata.TmpPass = "tmp"
 		ServersetUp.Uploadpath = "upload/"
 		ServersetUp.Zippath = "upload/zip/"
@@ -74,6 +77,7 @@ func main() {
 		// json.Indent(&buf, bytes, "", "  ")
 		// fmt.Println(buf.String())
 	}
+	// ServersetUp.Publicpath = "Public/"
 	Tmp, _ := exec.Command("which", "pdfimages").Output()
 	if len(Tmp) == 0 {
 		fmt.Println("err not install pdfimages", "run sudo apt install poppler-utils")
@@ -85,6 +89,10 @@ func main() {
 	}
 	if f, err := os.Stat(ServersetUp.Uploadpath); os.IsNotExist(err) || !f.IsDir() {
 		fmt.Printf("%vディレクトリは存在しません！\n", ServersetUp.Uploadpath)
+		return
+	}
+	if f, err := os.Stat(ServersetUp.Publicpath); os.IsNotExist(err) || !f.IsDir() {
+		fmt.Printf("%vディレクトリは存在しません！\n", ServersetUp.Publicpath)
 		return
 	}
 	webserversetup("output.log")

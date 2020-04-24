@@ -1,0 +1,15 @@
+zippass:<input type="text" name="zippass" id="zippass" value="<%zippass%>"><br>
+<!-- booktype:<input type="text" name="booktype" id="booktype" value="<%booktype%>"><br> -->
+copyflag:<select name="copyflag" id="copyflag" value="<%copyflag%>">
+    <option value="0">false</option>
+    <option value="1">true</option>
+</select><br>
+<script>
+    var list = document.forms[0].copyflag;
+    for (var i=0;i<list.length;i++){
+        if (list[i].value == "<%copyflag%>"){
+            document.forms[0].copyflag.selectedIndex = i;
+        }
+    }
+</script>
+filesize:<input type="text" name="filesize" id="filesize" value="<%filesize%>"><br>

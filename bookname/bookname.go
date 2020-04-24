@@ -50,7 +50,7 @@ func (t *Data) CreatDb() int {
 		name varchar,
 		title varchar,
 		writer varchar,
-		brand varchar,
+		burand varchar,
 		booktype varchar,
 		ext varchar,
 		created_at datatime,
@@ -149,7 +149,8 @@ func (t *Data) Add(name, title, writer, brand, booktype, ext string) int {
 	time := time.Now()
 	DbConnection, _ := sql.Open("sqlite3", t.dbpath)
 	defer DbConnection.Close()
-	cmd := "INSERT INTO " + database + " (id, title,name,writer,brand,booktype,ext,created_at,updated_at) VALUES ("
+	//burand,brand
+	cmd := "INSERT INTO " + database + " (id, title,name,writer,burand,booktype,ext,created_at,updated_at) VALUES ("
 	cmd += strconv.Itoa(id) + ","
 	cmd += "'" + title + "'" + ","
 	cmd += "'" + name + "'" + ","
@@ -199,7 +200,7 @@ func (t *Data) Update(id, name, title, writer, brand, booktype, ext string) int 
 	tmp += ", writer=" + "'" + writer + "'"
 	// }
 	// if brand != "" {
-	tmp += ", brand=" + "'" + brand + "'"
+	tmp += ", burand=" + "'" + brand + "'"
 	// }
 	// if booktype != "" {
 	tmp += ", booktype=" + "'" + booktype + "'"

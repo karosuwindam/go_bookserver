@@ -26,12 +26,44 @@ function destory(id){
     xhr.send(null);
   }
 }
+function ck_copyfilebox(str,ckflag){
+  var xhr = new XMLHttpRequest();
+ 
+  xhr.open('POST', 'ckbox');
+  xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+  var output = "zippass=" + str + "&copyflag="+ckflag;
+  xhr.send( output );
+  //alert(output);
 
+}
+function ck_copyfilebox_ck(str,ckdata){
+  var xhr = new XMLHttpRequest();
+  var URL = "/ckbox?" +"zippass=" + str;
+  var tmp = ckdata
+  xhr.open('GET',URL,true);
+  xhr.send( null );
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState == 4){
+      if(xhr.status == 200){
+        var flag = false
+        if (xhr.responseText=="1"){
+          flag = true;
+        }
+        //<!-- レスポンスが返ってきたらテキストエリアに代入する -->
+        document.getElementsByName(ckdata.name)[0].checked = flag;
+        alert( xhr.responseText);
+      }
+    }
+  }
+
+}
 function jsonOutput(str){
     var output = ""
     var table_title = ["id","name","title","writer","brand","booktype","ext"]
     if (meta_suburl=="filelist"){
       table_title = ["id","name","pdfpass","zippass","tag"]
+    }else if(meta_suburl=="copyfile"){
+      table_title = ["id","zippass","copyflag","filesize"]
     }
     var tmp = JSON.parse(str)
     output += "<table>"
@@ -45,11 +77,17 @@ function jsonOutput(str){
       output += "<tr>"
     //   output += tmp[i].name
       output += "<td>"+tmp[i].id+"</td>"
-      output += "<td>"+tmp[i].name+"</td>"
+      if (meta_suburl !="copyfile"){
+        output += "<td>"+tmp[i].name+"</td>"
+      }
       if (meta_suburl=="filelist"){
         output += "<td>"+tmp[i].pdfpass+"</td>"
         output += "<td>"+tmp[i].Zippass+"</td>"
         output += "<td>"+tmp[i].tag+"</td>"
+      }else if(meta_suburl=="copyfile"){
+        output += "<td>"+tmp[i].Zippass+"</td>"
+        output += "<td>"+tmp[i].copyflag+"</td>"
+        output += "<td>"+tmp[i].Filesize+"</td>"
       }else{
         output += "<td>"+tmp[i].title+"</td>"
         output += "<td>"+tmp[i].Writer+"</td>"
@@ -70,6 +108,14 @@ function jsonOutput(str){
       output += tmp[i].id+"'>"+"edit"+"</a></td>"
     //   output += " <a href='destory/"+tmp[i].id+"'>"+"destory"+"</a>"
       output += "<td><a href='javascript:destory("+tmp[i].id+");'>"+"destory"+"</a></td>"
+      if (meta_suburl=="copyfile"){
+        output += "<td>"+"<input type='checkbox' "
+        if (tmp[i].copyflag == "1"){
+          output += "checked='checked' "
+        }
+        output += "onclick=\"ck_copyfilebox(\'"+tmp[i].Zippass+"\',this.checked)\""
+        output += ">"+"</td>"
+      }
       output += "</tr>"
     //   output +="</div>"
     }
@@ -136,6 +182,15 @@ function outputSerchData(tmp,num){
     output += "<br>"
     output += "<a href='"+"/download/zip/"+tmp[i].id+"'>"+ "zip download" +"</a>"
     output += " <a href='"+"/download/pdf/"+tmp[i].id+"'>"+ "pdf download" +"</a>"
+    output += "<input type='checkbox' "
+    output += "onclick=\"ck_copyfilebox(\'"+tmp[i].Zippass+"\',this.checked)\" "
+    output += "name=\"data"+i+"\""
+    output += ">"
+    //ck_copyfilebox_ck()
+    output += "<input type='button' "
+    output += "onclick=\""+"ck_copyfilebox_ck('"+tmp[i].Zippass+"',this)"+""+"\" "
+    output += "name=\"data"+i+"\""
+    output += ">"
     output += "</div>\n"
     if (i%rownum==(rownum-1)){
     output += "<br>"}

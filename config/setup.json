@@ -1,1 +1,16 @@
-{"serverdata":{"serverip":"","serverport":"4000","booknamedb":"test1.db","filelistdb":"test1.db"},"zippath":"upload/zip/","pdfpath":"upload/pdf/","uploadpath":"upload/"}
+{
+    "serverdata":{
+        "serverip":"",
+        "serverport":"4000",
+        "booknamedb":"development.sqlite3",
+        "booknamedb":"test1.db",
+        "filelistdb":"development.sqlite3",
+        "filelistdb":"test1.db",
+        "copyfiledb":"test1.db",
+        "tmppass":"tmp"
+    },
+    "zippath":"upload/zip/",
+    "pdfpath":"upload/pdf/",
+    "uploadpath":"upload/",
+    "Publicpath":"Public"
+}

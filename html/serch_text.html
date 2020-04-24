@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <script src="/javascript/serchget.js"></script>
+        <script>
+            function selectradio(value){
+                selectdata = value-0
+            }
+            function ckdatab(output){
+                var data = document.getElementById(output)
+                if (data.innerHTML == ""){
+                    data.innerHTML = "output"
+                }
+            }
+        </script>
+        <title>serch</title>
+    </head>
+    <body>
+        <input type="text" name="" id="serch" onkeyup="serchgetData('output');ckdatab('output');return false">
+        <input type="radio" name="test1" id="rserch" checked="checked" value="0" onclick="selectradio(this.value);" >
+        <input type="radio" name="test1" id="rserch" value="1" onclick="selectradio(this.value);">
+        <input type="radio" name="test1" id="rserch" value="2" onclick="selectradio(this.value);">
+        <div id="output">output</div>
+    </body>
+</html>
