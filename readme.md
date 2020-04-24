@@ -11,12 +11,20 @@ sudo apt install poppler-utils
 ```
 
 コンパイル方法
-arm
+
+armの場合
 ```
 CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ \
 CGO_ENABLED=1 GOOS=linux GOARCH=arm GOARM=7 \
 go build -o bookserver
 ```
 
+以下のコマンドを実行をすれば上記と同じコマンド
+```
+source arm_build
+```
 
-/lib/arm-linux-gnueabihf/libc-2.24.so
+以下のフォルダが必要なもの
+* 実行ファイル
+* html
+* html_tmp
