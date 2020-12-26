@@ -36,6 +36,33 @@ function ck_copyfilebox(str,ckflag){
   //alert(output);
 
 }
+
+function serchBoxgetdata(str){
+  var tmp = JSON.parse(str);
+  for(var i=0;i<tmp.length;i++){
+    ck_copyfilebox_ckj(tmp[i].Zippass,"data"+i)
+  }
+}
+
+function ck_copyfilebox_ckj(str,ckdata){
+  var xhr = new XMLHttpRequest();
+  var URL = "/ckbox?" +"zippass=" + str;
+  xhr.open('GET',URL,true);
+  xhr.send( null );
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState == 4){
+      if(xhr.status == 200){
+        var flag = false
+        if (xhr.responseText=="1"){
+          flag = true;
+        }
+        //<!-- レスポンスが返ってきたらテキストエリアに代入する -->
+        document.getElementsByName(ckdata)[0].checked = flag;
+      }
+    }
+  }
+}
+
 function ck_copyfilebox_ck(str,ckdata){
   var xhr = new XMLHttpRequest();
   var URL = "/ckbox?" +"zippass=" + str;
@@ -51,12 +78,11 @@ function ck_copyfilebox_ck(str,ckdata){
         }
         //<!-- レスポンスが返ってきたらテキストエリアに代入する -->
         document.getElementsByName(ckdata.name)[0].checked = flag;
-        alert( xhr.responseText);
       }
     }
   }
-
 }
+
 function jsonOutput(str){
     var output = ""
     var table_title = ["id","name","title","writer","brand","booktype","ext"]
@@ -185,6 +211,7 @@ function outputSerchData(tmp,num){
     output += "<input type='checkbox' "
     output += "onclick=\"ck_copyfilebox(\'"+tmp[i].Zippass+"\',this.checked)\" "
     output += "name=\"data"+i+"\""
+    output += " id=\"ckbox"+i+"\""
     output += ">"
     //ck_copyfilebox_ck()
     output += "<input type='button' "
@@ -206,6 +233,8 @@ function serchDataGet(str){
   serchpageout(jsondata)
   return outputSerchData(jsondata,nowserchpage);
 }
+
+
 function chData(num){
   nowserchpage = num -0
   serchpageout(jsondata);
@@ -220,6 +249,7 @@ function serchgetJSON(output){
       nowserchpage = 1
       var data=req.responseText;
       document.getElementById(output).innerHTML = serchDataGet(data);
+      serchBoxgetdata(data);
     }
   };
   req.open("GET","/serch/filelist/"+keyword,false);

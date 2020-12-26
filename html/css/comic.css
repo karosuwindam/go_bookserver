@@ -38,7 +38,7 @@ div.page_tmp{
 }
 div.sidber{
   position: relative;
-  top:85%;
+  top:80%;
   left:30%;
   width: 50%;
   background-color: rgba(55,55,55,0.7);
@@ -60,7 +60,7 @@ p.title{
   font-size: large;
 }
 div.nowpage{
-  position: absolute;top: 95%;left:45%;
+  position: absolute;top: 85%;left:45%;
   // border: medium solid #ff00ff;
   background-color: rgba(55,55,55,0.7);
   color:white;

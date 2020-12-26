@@ -7,10 +7,10 @@
         "filelistdb":"development.sqlite3",
         "filelistdb":"test1.db",
         "copyfiledb":"test1.db",
-        "tmppass":"tmp"
+        "tmppass":"tmp/"
     },
     "zippath":"upload/zip/",
     "pdfpath":"upload/pdf/",
     "uploadpath":"upload/",
-    "Publicpath":"Public"
+    "Publicpath":"Public/"
 }

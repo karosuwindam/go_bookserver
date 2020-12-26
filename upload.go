@@ -156,7 +156,7 @@ func uploadCHdata(str, writer, title string) {
 	var dirfolder dirread.Dirtype
 	if strings.Index(str, "pdf") > 0 {
 		filename := str[0 : len(str)-4]
-		subcmd := "pdfimages" + " " + ServersetUp.Uploadpath + "/pdf" + "/" + str + " " + "tmp" + "/" + filename + " " + "-j"
+		subcmd := "pdfimages" + " " + ServersetUp.Uploadpath + "/pdf" + "/" + str + " " + ServersetUp.Serverdata.TmpPass + "/" + filename + " " + "-j"
 		_, kan := machdata(filename)
 		if kan == "0" {
 			kan = ""
@@ -166,9 +166,9 @@ func uploadCHdata(str, writer, title string) {
 		if err != nil {
 			Logdata.Out(0, "pdfimages cmd err file:%v", filename)
 		} else {
-			subcmd = "cp " + "tmp/" + filename + "-000.jpg " + "html/jpg/" + filename + ".jpg"
+			subcmd = "cp " + ServersetUp.Serverdata.TmpPass + "/" + filename + "-000.jpg " + "html/jpg/" + filename + ".jpg"
 			_ = exec.Command("sh", "-c", subcmd).Run()
-			dirfolder.Setup("tmp")
+			dirfolder.Setup(ServersetUp.Serverdata.TmpPass)
 			_ = dirfolder.Read("/")
 			// zipname := "[" + bookname_t.Tmp.Writer + "]" + bookname_t.Tmp.Title + kan + ".zip"
 			zipname := "[" + writer + "]" + title + kan + ".zip"
@@ -180,10 +180,10 @@ func uploadCHdata(str, writer, title string) {
 			defer zipWriter.Close()
 			for _, file := range dirfolder.Data {
 				if strings.Index(file.Name, filename) > 0 {
-					_ = addToZip("tmp"+file.Name, zipWriter)
+					_ = addToZip(ServersetUp.Serverdata.TmpPass+file.Name, zipWriter)
 				}
 			}
-			subcmd = "rm -rf" + " " + "tmp/" + filename + "*"
+			subcmd = "rm -rf" + " " + ServersetUp.Serverdata.TmpPass + "/" + filename + "*"
 			fmt.Println(subcmd)
 			err = exec.Command("sh", "-c", subcmd).Run()
 

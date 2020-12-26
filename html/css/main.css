@@ -8,8 +8,8 @@ div.output2{
     top: 10%;
     max-height: 90%;
     width: 95%;
-    overflow-x: auto;
     color:white;
+    overflow-x: auto;
     background-color: rgba(31, 34, 194, 0.7);
 
 }

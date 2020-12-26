@@ -403,3 +403,47 @@ function chIndexView(){
         tmp[0].style.display = ""
     }
 }
+
+
+/*
+ * スワイプイベント設定
+ */
+
+function setSwipe() {
+	let startX;		// タッチ開始 x座標
+	let startY;		// タッチ開始 y座標
+	let moveX;	// スワイプ中の x座標
+	let moveY;	// スワイプ中の y座標
+	let dist = 30;	// スワイプを感知する最低距離（ピクセル単位）
+	
+	// タッチ開始時： xy座標を取得
+	window.addEventListener("touchstart", function(e) {
+		e.preventDefault();
+		startX = e.touches[0].pageX;
+		startY = e.touches[0].pageY;
+	});
+	
+	// スワイプ中： xy座標を取得
+	window.addEventListener("touchmove", function(e) {
+		e.preventDefault();
+		moveX = e.changedTouches[0].pageX;
+		moveY = e.changedTouches[0].pageY;
+	});
+	
+	// タッチ終了時： スワイプした距離から左右どちらにスワイプしたかを判定する/距離が短い場合何もしない
+	window.addEventListener("touchend", function(e) {
+        if (startX > moveX && startX > moveX + dist) {		// 右から左にスワイプ
+            // console.log("left");
+            nextpage(-2);
+		}
+		else if (startX < moveX && startX + dist < moveX) {	// 左から右にスワイプ
+            // console.log("right");
+            nextpage(+2);
+		}
+	});
+}
+window.addEventListener("load", function(){
+
+	// スワイプイベント設定
+	setSwipe();
+});

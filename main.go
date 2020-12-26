@@ -95,6 +95,21 @@ func main() {
 		fmt.Printf("%vディレクトリは存在しません！\n", ServersetUp.Publicpath)
 		return
 	}
+	if ServersetUp.Serverdata.TmpPass[len(ServersetUp.Serverdata.TmpPass)-1:] == "/" {
+		ServersetUp.Serverdata.TmpPass = ServersetUp.Serverdata.TmpPass[:len(ServersetUp.Serverdata.TmpPass)-1]
+	}
+	if ServersetUp.Zippath[len(ServersetUp.Zippath)-1:] != "/" {
+		ServersetUp.Zippath += "/"
+	}
+	if ServersetUp.Pdfpath[len(ServersetUp.Pdfpath)-1:] != "/" {
+		ServersetUp.Pdfpath += "/"
+	}
+	if ServersetUp.Uploadpath[len(ServersetUp.Uploadpath)-1:] != "/" {
+		ServersetUp.Uploadpath += "/"
+	}
+	if ServersetUp.Publicpath[len(ServersetUp.Publicpath)-1:] != "/" {
+		ServersetUp.Publicpath += "/"
+	}
 	webserversetup("output.log")
 	webserverstart()
 	return
