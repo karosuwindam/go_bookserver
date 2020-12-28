@@ -26,6 +26,21 @@ function destory(id){
     xhr.send(null);
   }
 }
+function addfile(name,zippass,pdfpass,tag){
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {		  // XMLHttpRequest オブジェクトの状態が変化した際に呼び出されるイベントハンドラ
+    if(xhr.readyState == 4 && xhr.status == 200){ // サーバーからのレスポンスが完了し、かつ、通信が正常に終了した場合
+        var data = xhr.responseText;
+        console.log(data);		          // 取得した ファイルの中身を表示
+        document.getElementById("answer").innerHTML = "destory id=" + id + " OK"
+    }
+  };
+  var url = "/new/filelist"
+  xhr.open('POST',url,true)
+  xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+  var output = "name="+name+"&zippass="+zippass+"&pdfpass="+pdfpass+"&tag="+tag
+  xhr.send(output);
+}
 function ck_copyfilebox(str,ckflag){
   var xhr = new XMLHttpRequest();
  
@@ -81,6 +96,52 @@ function ck_copyfilebox_ck(str,ckdata){
       }
     }
   }
+}
+
+function listoutput(str){
+  var output = ""
+  table_title = ["pdfname","flag","zipname","flag","jpgname","flag"]
+  var tmp = JSON.parse(str)
+  output +="<table>"
+  output += "<tr>"
+  for (var i=0;i<table_title.length;i++){
+      output += "<th>"+table_title[i]+"</th>"
+  }
+  output += "</tr>"
+  for (var i=0;i < tmp.length;i++){
+    output += "<tr>"
+    output += "<td>"+tmp[i].Pdf.Name
+    if (tmp[i].Pdf.Flag=="0"){
+      output += " "+"<a href='/new/bookname'>"+"New"+"</a>"
+    }else{
+      
+    }
+    output +="</td>"
+    output += "<td>"+tmp[i].Pdf.Flag+"</td>"
+    output += "<td>"+tmp[i].Zip.Name
+    if ((tmp[i].Pdf.Flag=="1")&&(tmp[i].Zip.Flag=="0")&&(tmp[i].Jpg.Flag=="1")&&(tmp[i].Data.name!="")){
+      output += " " 
+      // output += "<form action='/new/filelist' method='post'>"
+      // output += "<input type='hidden' name='name' value="+tmp[i].Data.name+">"
+      // output += "<input type='hidden' name='pdfpass' value="+tmp[i].Data.pdfpass+">"
+      // output += "<input type='hidden' name='zippass' value="+tmp[i].Data.Zippass+">"
+      // output += "<input type='hidden' name='tag' value="+tmp[i].Data.tag+">"
+      // output += "<input type='submit' value='send'>"
+      // output += "</form>"
+      output += "<input type='button' value='send' onclick=\""
+      output += "addfile('"+tmp[i].Data.name+"','"+tmp[i].Data.Zippass+"','"+tmp[i].Data.pdfpass+"','"+tmp[i].Data.tag+"')"
+      output += ";this.disabled=true;return false\"> none"
+    }else if (tmp[i].Zip.Flag=="0"){
+      output += " none"
+    }
+    output +="</td>"
+    output += "<td>"+tmp[i].Zip.Flag+"</td>"
+    output += "<td>"+tmp[i].Jpg.Name+"</td>"
+    output += "<td>"+tmp[i].Jpg.Flag+"</td>"
+    output += "</tr>"
+  }
+  output += "</table>"
+  return output
 }
 
 function jsonOutput(str){
@@ -154,7 +215,11 @@ function jsonOutput(str){
       if(req.readyState == 4 && req.status == 200){ // サーバーからのレスポンスが完了し、かつ、通信が正常に終了した場合
           var data = req.responseText;
           console.log(data);		          // 取得した JSON ファイルの中身を表示
-          document.getElementById(output).innerHTML = jsonOutput(data);
+          if (meta_suburl == `listdata`){
+            document.getElementById(output).innerHTML = listoutput(data);
+          }else{
+            document.getElementById(output).innerHTML = jsonOutput(data);
+          }
       }
     };
     req.open("GET", url+"/"+meta_suburl, false); // HTTPメソッドとアクセスするサーバーの　URL　を指定

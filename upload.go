@@ -148,7 +148,7 @@ func dataBaseUpdate(name string) {
 	}
 	zipname := "[" + bookname_t.Tmp.Writer + "]" + bookname_t.Tmp.Title + kan + ".zip"
 	pdfname := filename + ".pdf"
-	tag := bookname_t.Tmp.Title + kan + "," + bookname_t.Tmp.Writer + "," + bookname_t.Tmp.Booktype + "," + bookname_t.Tmp.Ext
+	tag := bookname_t.Tmp.Title + kan + "," + bookname_t.Tmp.Writer + "," + bookname_t.Tmp.Brand + "," + bookname_t.Tmp.Booktype + "," + bookname_t.Tmp.Ext
 	filelist_t.Add(filename, pdfname, zipname, tag)
 }
 

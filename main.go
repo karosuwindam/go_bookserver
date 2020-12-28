@@ -111,6 +111,10 @@ func main() {
 		ServersetUp.Publicpath += "/"
 	}
 	webserversetup("output.log")
+	// tmp := FolderDataSetup()
+	// data, _ := json.Marshal(tmp.CheckData())
+	// fmt.Println(string(data))
+	// return
 	webserverstart()
 	return
 }

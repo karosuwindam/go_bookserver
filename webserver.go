@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -433,6 +435,16 @@ func machdatahttp(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintf(w, "%s", output)
 }
+func listdata(w http.ResponseWriter, r *http.Request) {
+	var buf bytes.Buffer
+	// urldata := urlAnalysis(r.URL.Path)
+	tmp := FolderDataSetup()
+	bytes, _ := json.Marshal(tmp.CheckData())
+	json.Indent(&buf, bytes, "", "  ")
+	output := buf.Bytes()
+	fmt.Fprintf(w, "%s", string(output))
+}
+
 func webserverstart() {
 	if !websetup_flag {
 		fmt.Println("web server not init")
@@ -451,6 +463,7 @@ func webserverstart() {
 	http.HandleFunc("/zip", zipdata)
 	http.HandleFunc("/view/", view)
 	http.HandleFunc("/download/", download)
+	http.HandleFunc("/listdata/", listdata)
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./html"))))
 	http.ListenAndServe(ServersetUp.Serverdata.Serverip+":"+ServersetUp.Serverdata.Serverport, nil)
 
