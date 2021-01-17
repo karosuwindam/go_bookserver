@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"math/rand"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -101,6 +103,7 @@ func (t *Data) Read(s string) int {
 		rows.Scan(&data.Id, &data.Name, &data.Pdfpass, &data.Zippass, &data.Tag, &data.Created_at, &data.Updated_at)
 		tmp = append(tmp, data)
 	}
+	sort.Slice(tmp, func(i, j int) bool { return t.strNameSelect(tmp[i].Name, tmp[j].Name) })
 	t.List = tmp
 	return E_OK
 }
@@ -316,4 +319,36 @@ func (t *Data) JsonOutList() string {
 func (t *Data) JsonOutTmp() string {
 	bytes, _ := json.Marshal(t.Tmp)
 	return string(bytes)
+}
+
+func (t *Data) strNameSelect(A, B string) bool {
+	var num_s, num_e int
+	var str_s, str_e string
+
+	var err error
+	str_s = strings.ToLower(A)
+	for z := 0; z < len(A); z++ {
+		tmp := A[z:]
+		num_s, err = strconv.Atoi(tmp)
+		if err == nil {
+			str_s = strings.ToLower(A[:z])
+			break
+		}
+		num_s = 0
+	}
+	str_e = strings.ToLower(B)
+	for z := 0; z < len(B); z++ {
+		tmp := B[z:]
+		num_e, err = strconv.Atoi(tmp)
+		if err == nil {
+			str_e = strings.ToLower(B[:z])
+			break
+		}
+		num_e = 0
+	}
+	if str_s == str_e {
+		return num_s < num_e
+
+	}
+	return A < B
 }

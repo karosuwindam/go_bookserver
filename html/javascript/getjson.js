@@ -101,7 +101,9 @@ function ck_copyfilebox_ck(str,ckdata){
 function listoutput(str){
   var output = ""
   table_title = ["pdfname","flag","zipname","flag","jpgname","flag"]
-  var tmp = JSON.parse(str)
+  var ary = JSON.parse(str)
+  output += "<div>Time:"+ary.Time+"s</div><br>"
+  var tmp = ary.Data
   output +="<table>"
   output += "<tr>"
   for (var i=0;i<table_title.length;i++){

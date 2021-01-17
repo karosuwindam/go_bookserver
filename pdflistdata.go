@@ -176,24 +176,27 @@ func (t *FolderCKeck) CheckData() []jsonFolderCkeck {
 			ary.Pdf.Flag = 1
 			json.Unmarshal([]byte(tmp), &fc)
 			//zipck
-			zip_tmp_t := []string{}
-			zipin_tmp_t := []string{}
+			zip_tmp_t := zip_tmp
+			zipin_tmp_t := zipin_tmp
+			ck := "[" + fc.Writer + "]" + fc.Title
+			if kan == "00" {
+				ary.Zip.Name = ck + ".zip"
+			} else {
+				ary.Zip.Name = ck + kan + ".zip"
+			}
 			for i, ss := range zip_tmp {
 				// fmt.Println(i)
-				ck := "[" + fc.Writer + "]" + fc.Title
 				if ss == ck+".zip" {
 					ary.Zip.Name = ss
 					if t.machdataZip(ss) {
 						ary.Zip.Flag = 1
 					}
-					for j, sss := range zip_tmp[i+1:] {
-						zip_tmp_t = append(zip_tmp_t, sss)
-						zipin_tmp_t = append(zipin_tmp_t, zipin_tmp[i+1+j])
-					}
+					zip_tmp_t = zip_tmp[:i]
+					zip_tmp_t = append(zip_tmp_t, zip_tmp[i+1:]...)
 					ary.Data.Name = s[:strings.Index(s, ".pdf")]
 					ary.Data.Zippass = ss
 					ary.Data.Pdfpass = s
-					ary.Data.Tag = fc.Title + "," + fc.Writer + "," + fc.Brand + "," + fc.Ext
+					ary.Data.Tag = fc.Title + "," + fc.Writer + "," + fc.Brand + "," + fc.Booktype + "," + fc.Ext
 
 					break
 				} else if ss == ck+kan+".zip" {
@@ -201,14 +204,12 @@ func (t *FolderCKeck) CheckData() []jsonFolderCkeck {
 					if t.machdataZip(ss) {
 						ary.Zip.Flag = 1
 					}
-					for j, sss := range zip_tmp[i+1:] {
-						zip_tmp_t = append(zip_tmp_t, sss)
-						zipin_tmp_t = append(zipin_tmp_t, zipin_tmp[i+1+j])
-					}
+					zip_tmp_t = zip_tmp[:i]
+					zip_tmp_t = append(zip_tmp_t, zip_tmp[i+1:]...)
 					ary.Data.Name = s[:strings.Index(s, ".pdf")]
 					ary.Data.Zippass = ss
 					ary.Data.Pdfpass = s
-					ary.Data.Tag = fc.Title + kan + "," + fc.Writer + "," + fc.Brand + "," + fc.Ext
+					ary.Data.Tag = fc.Title + "," + fc.Writer + "," + fc.Brand + "," + fc.Booktype + "," + fc.Ext
 
 					break
 				} else if ss == ck+"0"+kan+".zip" {
@@ -216,36 +217,34 @@ func (t *FolderCKeck) CheckData() []jsonFolderCkeck {
 					if t.machdataZip(ss) {
 						ary.Zip.Flag = 1
 					}
-					for j, sss := range zip_tmp[i+1:] {
-						zip_tmp_t = append(zip_tmp_t, sss)
-						zipin_tmp_t = append(zipin_tmp_t, zipin_tmp[i+1+j])
-					}
+					zip_tmp_t = zip_tmp[:i]
+					zip_tmp_t = append(zip_tmp_t, zip_tmp[i+1:]...)
 					ary.Data.Name = s[:strings.Index(s, ".pdf")]
 					ary.Data.Zippass = ss
 					ary.Data.Pdfpass = s
-					ary.Data.Tag = fc.Title + "0" + kan + "," + fc.Writer + "," + fc.Brand + "," + fc.Booktype + "," + fc.Ext
+					ary.Data.Tag = fc.Title + "," + fc.Writer + "," + fc.Brand + "," + fc.Booktype + "," + fc.Ext
 
 					break
+				} else {
+
 				}
-				zip_tmp_t = append(zip_tmp_t, ss)
-				zipin_tmp_t = append(zipin_tmp_t, zipin_tmp[i])
+
 			}
 			zip_tmp = zip_tmp_t
 			zipin_tmp = zipin_tmp_t
 			//jpgck
 			ary.Jpg.Name = s[:strings.Index(s, ".pdf")] + ".jpg"
-			// jpg_tmp_t := []string{}
-			for _, ss := range jpg_tmp {
+			jpg_tmp_t := jpg_tmp
+			for i, ss := range jpg_tmp {
 				if ss == ary.Jpg.Name {
 					ary.Jpg.Flag = 1
-					// for _, sss := range jpg_tmp[:i+1] {
-					// 	jpg_tmp_t = append(jpg_tmp_t, sss)
-					// }
+					jpg_tmp_t = jpg_tmp[:i]
+					jpg_tmp_t = append(jpg_tmp_t, jpg_tmp[i+1:]...)
 					break
 				}
 				// jpg_tmp_t = append(jpg_tmp_t, ss)
 			}
-			// jpg_tmp = jpg_tmp_t
+			jpg_tmp = jpg_tmp_t
 
 			// fc.Name
 			// fmt.Println(fc)

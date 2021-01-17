@@ -45,6 +45,9 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "%v", backHtmlUpload())
 			return
 		}
+		healthmessage.Message = "file upload now"
+		healthmessage.Code = 201
+
 		writefilename := fileHeader.Filename
 		fullfilepass := ServersetUp.Uploadpath + "/"
 		if strings.Index(writefilename, "pdf") > 0 {
@@ -61,6 +64,8 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		defer file.Close()
 		Logout.Out(1, "update file data :%v\n", writefilename)
 		dataBaseUpdate(writefilename)
+		writer := bookname_t.Tmp.Writer
+		title := bookname_t.Tmp.Title
 		for {
 			n, e := file.Read(data)
 			if n == 0 {
@@ -72,7 +77,8 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			fp.WriteAt(data, tmplength)
 			tmplength += int64(n)
 		}
-		go uploadCHdata(writefilename, bookname_t.Tmp.Writer, bookname_t.Tmp.Title)
+		healthmessage.Message = "file upload end"
+		go uploadCHdata(writefilename, writer, title)
 		fmt.Printf("POST\n")
 	} else {
 		url := r.URL.Path
@@ -140,7 +146,7 @@ func dataBaseUpdate(name string) {
 		i++
 	}
 	_, kan := machdata(filename)
-	if kan == "0" {
+	if kan == "00" {
 		kan = ""
 	}
 	if typename == "pdf" {
@@ -155,15 +161,18 @@ func dataBaseUpdate(name string) {
 func uploadCHdata(str, writer, title string) {
 	var dirfolder dirread.Dirtype
 	if strings.Index(str, "pdf") > 0 {
+		healthmessage.Message = "jpeg file create"
 		filename := str[0 : len(str)-4]
 		subcmd := "pdfimages" + " " + ServersetUp.Uploadpath + "/pdf" + "/" + str + " " + ServersetUp.Serverdata.TmpPass + "/" + filename + " " + "-j"
 		_, kan := machdata(filename)
-		if kan == "0" {
+		if kan == "00" {
 			kan = ""
 		}
 		fmt.Println(subcmd)
 		err := exec.Command("sh", "-c", subcmd).Run()
 		if err != nil {
+			healthmessage.Message = "pdf file not"
+			healthmessage.Code = 200
 			Logdata.Out(0, "pdfimages cmd err file:%v", filename)
 		} else {
 			subcmd = "cp " + ServersetUp.Serverdata.TmpPass + "/" + filename + "-000.jpg " + "html/jpg/" + filename + ".jpg"
@@ -173,6 +182,8 @@ func uploadCHdata(str, writer, title string) {
 			// zipname := "[" + bookname_t.Tmp.Writer + "]" + bookname_t.Tmp.Title + kan + ".zip"
 			zipname := "[" + writer + "]" + title + kan + ".zip"
 			dest, errzip := os.Create(ServersetUp.Uploadpath + "/" + "zip" + "/" + zipname)
+			healthmessage.Message = "zip create now"
+			healthmessage.Code = 200
 			if errzip != nil {
 				return
 			}
@@ -183,10 +194,11 @@ func uploadCHdata(str, writer, title string) {
 					_ = addToZip(ServersetUp.Serverdata.TmpPass+file.Name, zipWriter)
 				}
 			}
+			healthmessage.Message = "remove jpg file"
 			subcmd = "rm -rf" + " " + ServersetUp.Serverdata.TmpPass + "/" + filename + "*"
 			fmt.Println(subcmd)
 			err = exec.Command("sh", "-c", subcmd).Run()
-
+			healthmessage.Message = "OK"
 		}
 	} else if strings.Index(str, "zip") > 0 {
 

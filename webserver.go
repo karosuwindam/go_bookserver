@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"./bookname"
 	"./copyfile"
@@ -44,6 +45,9 @@ func webserversetup(logname string) {
 	Logdata.Out(0, "Bookname db Read %v\n", ServersetUp.Serverdata.Booknamedb)
 	Logdata.Out(0, "filelist db Read %v\n", ServersetUp.Serverdata.Filelistdb)
 	Logdata.Out(0, "copylist db Read %v\n", ServersetUp.Serverdata.Copyfiledb)
+
+	healthmessage.Message = "OK"
+	healthmessage.Code = 200
 	websetup_flag = true
 }
 
@@ -410,7 +414,7 @@ func machdata(str string) (string, string) {
 	}
 	num, _ := strconv.Atoi(kan)
 	if num < 10 {
-		kan = "0" + kan
+		kan = "0" + strconv.Itoa(num)
 	}
 	return output, kan
 }
@@ -438,8 +442,26 @@ func machdatahttp(w http.ResponseWriter, r *http.Request) {
 func listdata(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	// urldata := urlAnalysis(r.URL.Path)
+	start := time.Now()
 	tmp := FolderDataSetup()
+	// end := time.Now()
 	bytes, _ := json.Marshal(tmp.CheckData())
+	end := time.Now()
+	json.Indent(&buf, bytes, "", "  ")
+	output := buf.Bytes()
+	fmt.Fprintf(w, "{\"Data\":%s,\"Time\":%f}", string(output), (end.Sub(start)).Seconds())
+}
+
+type HealthMssage struct {
+	Message string `json:message`
+	Code    int    `json:code`
+}
+
+//healthチェック超
+func health(w http.ResponseWriter, r *http.Request) {
+	var buf bytes.Buffer
+	bytes, _ := json.Marshal(healthmessage)
+	w.WriteHeader(healthmessage.Code)
 	json.Indent(&buf, bytes, "", "  ")
 	output := buf.Bytes()
 	fmt.Fprintf(w, "%s", string(output))
@@ -464,6 +486,7 @@ func webserverstart() {
 	http.HandleFunc("/view/", view)
 	http.HandleFunc("/download/", download)
 	http.HandleFunc("/listdata/", listdata)
+	http.HandleFunc("/health", health)
 	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir("./html"))))
 	http.ListenAndServe(ServersetUp.Serverdata.Serverip+":"+ServersetUp.Serverdata.Serverport, nil)
 

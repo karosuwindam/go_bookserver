@@ -3,7 +3,7 @@
         "serverip":"",
         "serverport":"4000",
         "booknamedb":"development.sqlite3",
-        "booknamedb":"test1.db",
+        
         "filelistdb":"development.sqlite3",
         "filelistdb":"test1.db",
         "copyfiledb":"test1.db",

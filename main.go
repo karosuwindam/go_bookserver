@@ -40,6 +40,8 @@ var DbConnection *sql.DB
 //サーバの各設定
 var ServersetUp Setupdate
 
+var healthmessage HealthMssage
+
 const config_json = "config/setup.json"
 
 func main() {
